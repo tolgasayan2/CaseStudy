@@ -9,10 +9,10 @@ import Foundation
 
 public class CustomCellViewModel {
   let name: String
-  let id: String
+  let id: Int
   
   init(name: String,
-       id: String) {
+       id: Int) {
     self.name = name
     self.id = id
   }

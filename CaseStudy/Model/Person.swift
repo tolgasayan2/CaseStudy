@@ -13,8 +13,6 @@ public enum FetchError: String {
     case parameterError = "Parameter error"
 }
 
-
-
 public struct Person {
   
   public enum Constants {
@@ -25,6 +23,7 @@ public struct Person {
     static let errorProbability = 0.05 // must be > 0.0
     static let backendBugTriggerProbability = 0.05 // must be > 0.0
     static let emptyFirstResultsProbability = 0.1 // must be > 0.0
+    static let emptyString = "No one here :)"
   }
  
   public class FetchResponse {
@@ -47,13 +46,9 @@ public struct Person {
       }
   }
   
-  struct PersonViewModel {
+  struct ViewModel {
     let name: String
-    let id: String
-  }
-  
-  enum Section {
-    case person(viewModel: Person.PersonViewModel)
+    let id: Int
   }
 }
 

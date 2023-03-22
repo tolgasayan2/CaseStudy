@@ -10,16 +10,6 @@ import UIKit
 class CustomTableViewCell: UITableViewCell {
   static let identifier = "CustomTableViewCell"
   
-  public var viewModel: CustomCellViewModel? {
-    didSet {
-      guard let viewModel = viewModel else {
-        isHidden = true
-        return
-      }
-      initView(viewModel: viewModel)
-    }
-  }
-  
   private var stackView: UIStackView = {
     let stackView = UIStackView()
     stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +38,16 @@ class CustomTableViewCell: UITableViewCell {
     return label
   }()
   
+  public var viewModel: CustomCellViewModel? {
+    didSet {
+      guard let viewModel = viewModel else {
+        isHidden = true
+        return
+      }
+      initView(viewModel: viewModel)
+    }
+  }
+    
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     stackView.addArrangedSubview(nameLabel)
@@ -65,12 +65,11 @@ class CustomTableViewCell: UITableViewCell {
       stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
       stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -180),
       stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-      stackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
     ])
   }
   
   private func initView(viewModel: CustomCellViewModel) {
     self.nameLabel.text = viewModel.name
-    self.idLabel.text = viewModel.id
+    self.idLabel.text = String(format: "%(\(viewModel.id))")
   }
 }

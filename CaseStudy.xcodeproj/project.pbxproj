@@ -96,7 +96,6 @@
 			isa = PBXGroup;
 			children = (
 				B84462E529C8E43300978E9A /* CaseStudy */,
-				B8E4F66E29CB91110063733A /* ViewModel */,
 				B84462FC29C8E43600978E9A /* CaseStudyTests */,
 				B844630629C8E43600978E9A /* CaseStudyUITests */,
 				B84462E429C8E43300978E9A /* Products */,
@@ -116,10 +115,12 @@
 		B84462E529C8E43300978E9A /* CaseStudy */ = {
 			isa = PBXGroup;
 			children = (
-				B897C69529CA619D00832901 /* Utils */,
 				B844632029C8E9EB00978E9A /* Core */,
+				B897C69529CA619D00832901 /* Utils */,
+				B8E4F67129CBACEC0063733A /* DataSource */,
 				B844632429C8F71900978E9A /* Model */,
 				B844631629C8E55D00978E9A /* View */,
+				B8E4F66E29CB91110063733A /* ViewModel */,
 			);
 			path = CaseStudy;
 			sourceTree = "<group>";
@@ -144,7 +145,6 @@
 		B844631629C8E55D00978E9A /* View */ = {
 			isa = PBXGroup;
 			children = (
-				B844632729C8F82700978E9A /* DataSource.swift */,
 				B844631829C8E87B00978E9A /* CustomCell */,
 				B844631729C8E56500978E9A /* Controller */,
 			);
@@ -205,6 +205,14 @@
 				B8E4F66F29CB912D0063733A /* PersonViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B8E4F67129CBACEC0063733A /* DataSource */ = {
+			isa = PBXGroup;
+			children = (
+				B844632729C8F82700978E9A /* DataSource.swift */,
+			);
+			path = DataSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
