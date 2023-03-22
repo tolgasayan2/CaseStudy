@@ -25,7 +25,7 @@ class CustomTableViewCell: UITableViewCell {
     stackView.translatesAutoresizingMaskIntoConstraints = false
     stackView.axis = .horizontal
     stackView.distribution = .fill
-    stackView.spacing = 6
+    stackView.spacing = 5
     return stackView
   }()
   

@@ -15,9 +15,12 @@ final class HomeViewController: UIViewController {
     return tableView
   }()
   
+  let viewModel: PersonDisplayLogic = PersonViewModel()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     prepareUI()
+    viewModel.fetch()
   }
   
   override func viewDidLayoutSubviews() {
