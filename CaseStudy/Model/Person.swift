@@ -13,24 +13,40 @@ public enum FetchError: String {
     case parameterError = "Parameter error"
 }
 
-public typealias FetchCompletionHandler = (FetchResponse?, FetchError?) -> ()
 
-public class FetchResponse {
-    let people: [Person]
-    let next: String?
-    
-    init(people: [Person], next: String?) {
-        self.people = people
-        self.next = next
-    }
+
+public struct Person {
+ 
+  public class FetchResponse {
+      let people: [PersonInfo]
+      let next: String?
+      
+      init(people: [PersonInfo], next: String?) {
+          self.people = people
+          self.next = next
+      }
+  }
+
+  public class PersonInfo {
+      let id: Int
+      let fullName: String
+      
+      init(id: Int, fullName: String) {
+          self.id = id
+          self.fullName = fullName
+      }
+  }
+  
+  struct PersonViewModel {
+    let name: String
+    let id: String
+  }
+  
+  enum Section {
+    case person(viewModel: Person.PersonViewModel)
+  }
 }
 
-public class Person {
-    let id: Int
-    let fullName: String
-    
-    init(id: Int, fullName: String) {
-        self.id = id
-        self.fullName = fullName
-    }
-}
+
+
+

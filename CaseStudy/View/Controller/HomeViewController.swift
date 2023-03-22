@@ -15,15 +15,17 @@ final class HomeViewController: UIViewController {
     return tableView
   }()
   
-  private let viewModel = HomeViewModel()
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     prepareUI()
   }
   
-  private func prepareUI() {
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
     tableView.frame = view.bounds
+  }
+  
+  private func prepareUI() {
     view.addSubview(tableView)
     setupTableView()
   }
