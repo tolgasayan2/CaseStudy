@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PersonDisplayLogic {
-  func fetch()
+  func fetch(next: String?)
   func delegate(output: DisplayLogic)
 }
 
@@ -20,10 +20,12 @@ class PersonViewModel: PersonDisplayLogic {
     dataSource = DataSource()
   }
   
-  func fetch() {
-      dataSource.fetch(next: nil) { [weak self] response, error in
+  func fetch(next: String?) {
+      dataSource.fetch(next: next) { [weak self] response, error in
         guard let self = self, error == nil else {
-          print(error?.rawValue as Any)
+          if let error = error {
+            self?.viewController?.displayAlert(error: error)
+          }
           return
         }
         self.handleResponse(response: response)
@@ -31,13 +33,17 @@ class PersonViewModel: PersonDisplayLogic {
   }
   
   private func handleResponse(response: Person.FetchResponse?) {
-    if let response = response?.people {
-      let personArray: [Person.ViewModel] = response.map({ person in
+    if let people = response?.people {
+      let personArray: [Person.ViewModel] = people.map({ person in
         let person = Person.ViewModel(name: person.fullName,
                                       id: person.id)
         return person
       })
       viewController?.displayTableView(viewModel: personArray)
+      
+      if let next = response?.next {
+        viewController?.getNext(next: next)
+      }
     } else {
       viewController?.displayEmptyView()
     }

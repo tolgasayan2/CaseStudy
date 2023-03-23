@@ -7,7 +7,18 @@
 
 import Foundation
 
-extension String {
+
+public extension Optional where Wrapped == String {
+  var stringValue: String {
+    return self ?? ""
+  }
+  
+  var intValue: Int {
+    return Int(stringValue) ?? 0
+  }
+}
+
+public extension String {
   
   func generateRandomDoubleString(firstArray: [String],
                               secondArray: [String]) -> String {

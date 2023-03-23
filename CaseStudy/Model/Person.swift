@@ -8,9 +8,9 @@
 import Foundation
 
 
-public enum FetchError: String {
-    case internalError = "Internal Server Error"
-    case parameterError = "Parameter error"
+public enum FetchError: Error {
+    case internalError
+    case parameterError
 }
 
 public struct Person {

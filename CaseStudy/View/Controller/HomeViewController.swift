@@ -10,9 +10,13 @@ protocol DisplayLogic: AnyObject {
   func displayTableView(viewModel: [Person.ViewModel])
   func getNext(next: String)
   func displayEmptyView()
+  func displayAlert(error: FetchError)
 }
 
-final class HomeViewController: UIViewController, DisplayLogic {
+final class HomeViewController: UIViewController {
+  
+  // MARK: Properties
+  
   private let tableView: UITableView = {
     let tableView = UITableView()
     tableView.register(CustomTableViewCell.self,
@@ -20,14 +24,20 @@ final class HomeViewController: UIViewController, DisplayLogic {
     return tableView
   }()
   
+  lazy private var emptyView = UIView()
+  private let refreshController: UIRefreshControl = UIRefreshControl()
+  
+  // MARK: initiliazers
+  
   let viewModel: PersonDisplayLogic = PersonViewModel()
   var detailViewModel: [Person.ViewModel] = .init()
-  lazy var emptyView = UIView()
+  private var nextCounter: String? = nil
+  
   
   override func viewDidLoad() {
     super.viewDidLoad()
     prepareUI()
-    viewModel.fetch()
+    viewModel.fetch(next: nextCounter)
     viewModel.delegate(output: self)
   }
   
@@ -36,10 +46,13 @@ final class HomeViewController: UIViewController, DisplayLogic {
     tableView.frame = view.bounds
   }
   
+  // MARK: Setup Views
+  
   private func prepareUI() {
     view.addSubview(tableView)
     setupTableView()
     setupEmptyView()
+    setupRefreshControl()
   }
   
   func setupTableView() {
@@ -72,18 +85,61 @@ final class HomeViewController: UIViewController, DisplayLogic {
     ])
   }
   
+  func setupRefreshControl() {
+    /// if any component with same frame, refreshControl disappear z position
+    refreshController.layer.zPosition = -1
+    refreshController.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+    tableView.refreshControl = refreshController
+  }
+  
+  @objc
+  private func didPullToRefresh() {
+    viewModel.fetch(next: nextCounter)
+  }
+}
+
+// MARK: DisplayLogic
+extension HomeViewController: DisplayLogic {
   func displayTableView(viewModel: [Person.ViewModel]) {
     self.detailViewModel = viewModel
-    tableView.reloadData()
+    refreshController.endRefreshing()
+    self.tableView.reloadData()
   }
   
   func displayEmptyView() {
     tableView.isHidden = true
     emptyView.isHidden = false
+    refreshController.endRefreshing()
+  }
+  
+  func displayAlert(error: FetchError) {
+    switch error {
+    case .internalError:
+      let alertMessage = "Lütfen internet bağlantınızı kontrol edip tekrar deneyin"
+      let alertTitle = "Bilgilendirme"
+      let alert = UIAlertController(title: alertTitle,
+                                    message: alertMessage,
+                                    preferredStyle: .alert)
+      alert.addAction(UIAlertAction(title: "Tekrar Dene", style: .cancel, handler: { _ in
+        self.viewModel.fetch(next: self.nextCounter)
+      }))
+      self.present(alert, animated: true, completion: nil)
+    case .parameterError:
+      let alertMessage = "Beklenmeyen bir hata oluştu"
+      let alertTitle = "Bilgilendirme"
+      let alert = UIAlertController(title: alertTitle,
+                                    message: alertMessage,
+                                    preferredStyle: .alert)
+      alert.addAction(UIAlertAction(title: "Tekrar Dene", style: .cancel, handler: { _ in
+        self.viewModel.fetch(next: self.nextCounter)
+      }))
+      
+      self.present(alert, animated: true, completion: nil)
+    }
   }
   
   func getNext(next: String) {
-    
+    self.nextCounter = next
   }
 }
 
