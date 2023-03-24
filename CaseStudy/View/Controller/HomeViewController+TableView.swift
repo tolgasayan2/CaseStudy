@@ -8,7 +8,10 @@
 import Foundation
 import UIKit
 
-extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
+extension HomeViewController: UITableViewDelegate,
+                              UITableViewDataSource,
+                              UIScrollViewDelegate {
+  
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return detailViewModel.count
   }
@@ -17,7 +20,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     let customCell = CustomTableViewCell()
     let fullName = detailViewModel[indexPath.row].name
     let id = detailViewModel[indexPath.row].id
-    customCell.viewModel = CustomCellViewModel(name: fullName, id: id)
+    if indexPath.row == detailViewModel.count - 1 {
+      viewModel.fetch(next: self.nextCounter,
+                      isPagination: true)
+    }
+    customCell.isUserInteractionEnabled = false
+    customCell.viewModel = CustomCellViewModel(name: fullName,
+                                               id: id)
     return customCell
   }
 }

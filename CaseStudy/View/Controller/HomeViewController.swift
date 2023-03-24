@@ -7,6 +7,8 @@
 
 import UIKit
 protocol DisplayLogic: AnyObject {
+  var detailViewModel: [Person.ViewModel] { get set }
+  
   func displayTableView(viewModel: [Person.ViewModel])
   func getNext(next: String)
   func displayEmptyView()
@@ -25,19 +27,21 @@ final class HomeViewController: UIViewController {
   }()
   
   lazy private var emptyView = UIView()
-  private let refreshController: UIRefreshControl = UIRefreshControl()
+  private let alert: UIAlertController = UIAlertController()
+  private lazy var refreshController: UIRefreshControl = UIRefreshControl()
   
   // MARK: initiliazers
   
   let viewModel: PersonDisplayLogic = PersonViewModel()
   var detailViewModel: [Person.ViewModel] = .init()
-  private var nextCounter: String? = nil
+  var nextCounter: String? = nil
   
   
   override func viewDidLoad() {
     super.viewDidLoad()
     prepareUI()
-    viewModel.fetch(next: nextCounter)
+    viewModel.fetch(next: nextCounter,
+                    isPagination: false)
     viewModel.delegate(output: self)
   }
   
@@ -94,14 +98,15 @@ final class HomeViewController: UIViewController {
   
   @objc
   private func didPullToRefresh() {
-    viewModel.fetch(next: nextCounter)
+    viewModel.fetch(next: nextCounter,
+                    isPagination: false)
   }
 }
 
 // MARK: DisplayLogic
 extension HomeViewController: DisplayLogic {
   func displayTableView(viewModel: [Person.ViewModel]) {
-    self.detailViewModel = viewModel
+    self.detailViewModel = viewModel.unique
     refreshController.endRefreshing()
     self.tableView.reloadData()
   }
@@ -113,29 +118,16 @@ extension HomeViewController: DisplayLogic {
   }
   
   func displayAlert(error: FetchError) {
-    switch error {
-    case .internalError:
-      let alertMessage = "Lütfen internet bağlantınızı kontrol edip tekrar deneyin"
-      let alertTitle = "Bilgilendirme"
-      let alert = UIAlertController(title: alertTitle,
-                                    message: alertMessage,
-                                    preferredStyle: .alert)
-      alert.addAction(UIAlertAction(title: "Tekrar Dene", style: .cancel, handler: { _ in
-        self.viewModel.fetch(next: self.nextCounter)
-      }))
-      self.present(alert, animated: true, completion: nil)
-    case .parameterError:
-      let alertMessage = "Beklenmeyen bir hata oluştu"
-      let alertTitle = "Bilgilendirme"
-      let alert = UIAlertController(title: alertTitle,
-                                    message: alertMessage,
-                                    preferredStyle: .alert)
-      alert.addAction(UIAlertAction(title: "Tekrar Dene", style: .cancel, handler: { _ in
-        self.viewModel.fetch(next: self.nextCounter)
-      }))
-      
-      self.present(alert, animated: true, completion: nil)
-    }
+    let message = Person.Alert(error: error).rawValue
+    let title = Person.Alert.message.rawValue
+    let buttonTitle = Person.Alert.buttonTitle.rawValue
+    let newAlert = alert.makeAlert(title: title, message: message)
+    newAlert.addAction(UIAlertAction(title: buttonTitle, style: .cancel, handler: { _ in
+      self.viewModel.fetch(next: self.nextCounter,
+                           isPagination: false)
+    }))
+    
+    self.present(newAlert, animated: true, completion: nil)
   }
   
   func getNext(next: String) {

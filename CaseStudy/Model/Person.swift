@@ -15,6 +15,20 @@ public enum FetchError: Error {
 
 public struct Person {
   
+  enum Alert: String {
+    init(error: FetchError) {
+      if case .internalError = error {
+        self = .internetProblem
+      } else {
+        self = .unexpected
+      }
+    }
+    case message = "Bilgilendirme"
+    case buttonTitle = "Tekrar Dene"
+    case internetProblem = "Lütfen internet bağlantınızı kontrol edip tekrar deneyin"
+    case unexpected = "Beklenmeyen bir hata oluştu"
+  }
+  
   public enum Constants {
     static let peopleCountRange: ClosedRange<Int> = 100...200 // lower bound must be > 0
     static let fetchCountRange: ClosedRange<Int> = 5...20 // lower bound must be > 0
@@ -46,7 +60,7 @@ public struct Person {
       }
   }
   
-  struct ViewModel {
+  struct ViewModel: Equatable {
     let name: String
     let id: Int
   }

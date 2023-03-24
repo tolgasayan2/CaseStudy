@@ -47,7 +47,7 @@ class CustomTableViewCell: UITableViewCell {
       initView(viewModel: viewModel)
     }
   }
-    
+  
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     stackView.addArrangedSubview(nameLabel)

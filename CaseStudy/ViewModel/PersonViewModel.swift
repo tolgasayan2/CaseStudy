@@ -8,7 +8,8 @@
 import Foundation
 
 protocol PersonDisplayLogic {
-  func fetch(next: String?)
+  func fetch(next: String?,
+             isPagination: Bool)
   func delegate(output: DisplayLogic)
 }
 
@@ -20,32 +21,45 @@ class PersonViewModel: PersonDisplayLogic {
     dataSource = DataSource()
   }
   
-  func fetch(next: String?) {
-      dataSource.fetch(next: next) { [weak self] response, error in
-        guard let self = self, error == nil else {
-          if let error = error {
-            self?.viewController?.displayAlert(error: error)
-          }
-          return
+  func fetch(next: String?,
+             isPagination: Bool) {
+    dataSource.fetch(next: next) { [weak self] response, error in
+      guard let self = self, error == nil else {
+        if let error = error {
+          self?.viewController?.displayAlert(error: error)
         }
-        self.handleResponse(response: response)
+        return
       }
+      self.handleResponse(response: response,
+                          isPagination: isPagination)
+    }
   }
   
-  private func handleResponse(response: Person.FetchResponse?) {
-    if let people = response?.people {
+  private func handleResponse(response: Person.FetchResponse?,
+                              isPagination: Bool) {
+    guard let people = response?.people else {
+      viewController?.displayEmptyView()
+      return
+    }
+  
+    if isPagination {
+      var detailViewModel = viewController?.detailViewModel
+      people.forEach { person in
+        let person = Person.ViewModel(name: person.fullName,
+                                                   id: person.id)
+        detailViewModel?.append(person)
+      }
+      viewController?.displayTableView(viewModel: detailViewModel ?? [])
+    } else {
       let personArray: [Person.ViewModel] = people.map({ person in
         let person = Person.ViewModel(name: person.fullName,
                                       id: person.id)
         return person
       })
       viewController?.displayTableView(viewModel: personArray)
-      
-      if let next = response?.next {
-        viewController?.getNext(next: next)
-      }
-    } else {
-      viewController?.displayEmptyView()
+    }
+    if let next = response?.next {
+      viewController?.getNext(next: next)
     }
   }
   

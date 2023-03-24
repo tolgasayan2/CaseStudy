@@ -18,6 +18,17 @@ public extension Optional where Wrapped == String {
   }
 }
 
+public extension Array where Element: Equatable {
+    var unique: [Element] {
+        var uniqueValues: [Element] = []
+        forEach { item in
+            guard !uniqueValues.contains(item) else { return }
+            uniqueValues.append(item)
+        }
+        return uniqueValues
+    }
+}
+
 public extension String {
   
   func generateRandomDoubleString(firstArray: [String],

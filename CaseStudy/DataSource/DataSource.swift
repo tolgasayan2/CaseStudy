@@ -15,23 +15,18 @@ protocol DataSourceNetworking {
 public class DataSource: DataSourceNetworking {
   public typealias FetchCompletionHandler = (Person.FetchResponse?, FetchError?) -> ()
   private var people: [Person.PersonInfo] = []
-  private let operationsQueue = DispatchQueue.init(
-    label: "data_source_operations_queue",
-    qos: .background,
-    attributes: [],
-    autoreleaseFrequency: .inherit,
-    target: nil
-  )
+  private let operationsQueue = OperationQueue()
   
   public func fetch(next: String?, _ completionHandler: @escaping FetchCompletionHandler) {
     DispatchQueue.global().async {
-      self.operationsQueue.sync {
         self.initializeDataIfNecessary()
+       
         let (response, error, waitTime) = self.processRequest(next)
         DispatchQueue.main.asyncAfter(deadline: .now() + waitTime) {
+          self.operationsQueue.waitUntilAllOperationsAreFinished()
+          self.operationsQueue.maxConcurrentOperationCount = 1
           completionHandler(response, error)
         }
-      }
     }
   }
   
