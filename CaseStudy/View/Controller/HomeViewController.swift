@@ -21,8 +21,6 @@ final class HomeViewController: UIViewController {
   
   private let tableView: UITableView = {
     let tableView = UITableView()
-    tableView.register(CustomTableViewCell.self,
-                       forCellReuseIdentifier: CustomTableViewCell.identifier)
     return tableView
   }()
   
@@ -61,6 +59,7 @@ final class HomeViewController: UIViewController {
   
   func setupTableView() {
     tableView.translatesAutoresizingMaskIntoConstraints = false
+    tableView.rowHeight = 44
     tableView.delegate = self
     tableView.dataSource = self
   }
