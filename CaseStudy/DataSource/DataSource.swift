@@ -19,14 +19,14 @@ public class DataSource: DataSourceNetworking {
   
   public func fetch(next: String?, _ completionHandler: @escaping FetchCompletionHandler) {
     DispatchQueue.global().async {
-        self.initializeDataIfNecessary()
-       
-        let (response, error, waitTime) = self.processRequest(next)
-        DispatchQueue.main.asyncAfter(deadline: .now() + waitTime) {
-          self.operationsQueue.waitUntilAllOperationsAreFinished()
-          self.operationsQueue.maxConcurrentOperationCount = 1
-          completionHandler(response, error)
-        }
+      self.initializeDataIfNecessary()
+      
+      let (response, error, waitTime) = self.processRequest(next)
+      self.operationsQueue.waitUntilAllOperationsAreFinished()
+      self.operationsQueue.maxConcurrentOperationCount = 1
+      DispatchQueue.main.asyncAfter(deadline: .now() + waitTime) {
+        completionHandler(response, error)
+      }
     }
   }
   
