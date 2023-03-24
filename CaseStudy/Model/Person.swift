@@ -11,22 +11,27 @@ import Foundation
 public enum FetchError: Error {
     case internalError
     case parameterError
+    case emptyResponse
 }
 
 public struct Person {
   
   enum Alert: String {
     init(error: FetchError) {
-      if case .internalError = error {
+      switch error {
+      case .internalError:
         self = .internetProblem
-      } else {
+      case .parameterError:
         self = .unexpected
+      case .emptyResponse:
+        self = .noResponse
       }
     }
     case message = "Bilgilendirme"
     case buttonTitle = "Tekrar Dene"
     case internetProblem = "Lütfen internet bağlantınızı kontrol edip tekrar deneyin"
     case unexpected = "Beklenmeyen bir hata oluştu"
+    case noResponse = "Listenecek bir isim henüz bulunamadı"
   }
   
   public enum Constants {

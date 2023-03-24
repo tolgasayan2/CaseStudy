@@ -115,6 +115,9 @@ extension HomeViewController: DisplayLogic {
     tableView.isHidden = true
     emptyView.isHidden = false
     refreshController.endRefreshing()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+      self.displayAlert(error: FetchError.emptyResponse)
+    }
   }
   
   func displayAlert(error: FetchError) {
