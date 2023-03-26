@@ -16,6 +16,12 @@ public enum FetchError: Error {
 
 public struct Person {
   
+  enum ViewKind: Int {
+    case tableView = 1001
+    case emptyView = 1002
+    case refreshControl = 1003
+  }
+  
   enum Alert: String {
     init(error: FetchError) {
       switch error {

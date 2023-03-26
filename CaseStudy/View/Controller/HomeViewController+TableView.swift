@@ -20,13 +20,14 @@ extension HomeViewController: UITableViewDelegate,
     let customCell = CustomTableViewCell()
     let fullName = detailViewModel[indexPath.row].name
     let id = detailViewModel[indexPath.row].id
-    if indexPath.row == detailViewModel.count - 1 {
-      viewModel.fetch(next: self.nextCounter,
-                      isPagination: true)
-    }
     customCell.isUserInteractionEnabled = false
     customCell.viewModel = CustomCellViewModel(name: fullName,
                                                id: id)
+    customCell.makePagination(indexPath: indexPath,
+                              arrayModel: self.detailViewModel) {
+      viewModel.fetch(next: self.nextCounter,
+                      isPagination: true)
+    }
     return customCell
   }
 }

@@ -30,7 +30,7 @@ final class HomeViewController: UIViewController {
   
   // MARK: initiliazers
   
-  let viewModel: PersonDisplayLogic = PersonViewModel()
+  var viewModel: PersonDisplayLogic = PersonViewModel()
   var detailViewModel: [Person.ViewModel] = .init()
   var nextCounter: String? = nil
   
@@ -47,10 +47,11 @@ final class HomeViewController: UIViewController {
     super.viewDidLayoutSubviews()
     tableView.frame = view.bounds
   }
-  
+    
   // MARK: Setup Views
   
   private func prepareUI() {
+    view.backgroundColor = .systemBackground
     view.addSubview(tableView)
     setupTableView()
     setupEmptyView()
@@ -60,6 +61,8 @@ final class HomeViewController: UIViewController {
   func setupTableView() {
     tableView.translatesAutoresizingMaskIntoConstraints = false
     tableView.rowHeight = 44
+    tableView.backgroundColor = .systemBackground
+    tableView.tag = Person.ViewKind.tableView.rawValue
     tableView.delegate = self
     tableView.dataSource = self
   }
@@ -67,10 +70,11 @@ final class HomeViewController: UIViewController {
   func setupEmptyView() {
     let emptyLabel = UILabel()
     emptyView.translatesAutoresizingMaskIntoConstraints = false
-    emptyView.backgroundColor = .white
+    emptyView.backgroundColor = .systemBackground
     emptyLabel.translatesAutoresizingMaskIntoConstraints = false
     emptyLabel.font = .systemFont(ofSize: 15)
     emptyLabel.text = Person.Constants.emptyString
+    emptyView.tag = Person.ViewKind.emptyView.rawValue
     emptyView.addSubview(emptyLabel)
     view.addSubview(emptyView)
     emptyView.isHidden = true
@@ -91,6 +95,7 @@ final class HomeViewController: UIViewController {
   func setupRefreshControl() {
     /// if any component with same frame, refreshControl disappear z position
     refreshController.layer.zPosition = -1
+    refreshController.tag = Person.ViewKind.refreshControl.rawValue
     refreshController.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
     tableView.refreshControl = refreshController
   }
@@ -105,7 +110,7 @@ final class HomeViewController: UIViewController {
 // MARK: DisplayLogic
 extension HomeViewController: DisplayLogic {
   func displayTableView(viewModel: [Person.ViewModel]) {
-    self.detailViewModel = viewModel.unique
+    self.detailViewModel = viewModel
     refreshController.endRefreshing()
     self.tableView.reloadData()
   }

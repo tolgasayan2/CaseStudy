@@ -9,28 +9,82 @@ import XCTest
 @testable import CaseStudy
 
 class CaseStudyTests: XCTestCase {
+  
+    // MARK: Subject under test
+  
+  var sut: HomeViewController!
+  var window: UIWindow!
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+  override func setUp() {
+    super.setUp()
+    window = UIWindow()
+    setupHomeViewController()
+    loadView()
+  }
+
+  override func tearDown() {
+    window = nil
+    sut = nil
+    super.tearDown()
+  }
+  
+  // MARK: Test Setup
+  
+  func setupHomeViewController() {
+    sut = HomeViewController()
+  }
+  
+  func loadView() {
+    window.addSubview(sut.view)
+    RunLoop.current.run(until: Date())
+  }
+  
+  // MARK: Test doubles
+  
+  private final class PersonDisplayLogicSpy: PersonDisplayLogic {
+    var fetchCalled = false
+    var delegateCalled = false
+    
+    func fetch(next: String?, isPagination: Bool) {
+      fetchCalled = true
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    func delegate(output: DisplayLogic) {
+      delegateCalled = true
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+  }
+  
+  // MARK: Tests
+  
+  func testViewDidLoad_whenViewDidLoaded_shouldFetchCalled() {
+    // Given
+    let spy = PersonDisplayLogicSpy()
+    sut.viewModel = spy
+    
+    // When
+    sut.viewDidLoad()
+    
+    // Then
+    XCTAssertTrue(spy.fetchCalled)
+    XCTAssertTrue(spy.delegateCalled)
+  }
+  
+  func testViewDidLoad_whenViewDidLoaded_shouldSetupViews() {
+    // Given
+    let tableView = sut.view.viewWithTag(Person.ViewKind.tableView.rawValue) as! UITableView
+    let emptyView = sut.view.viewWithTag(Person.ViewKind.emptyView.rawValue) as! UIView
+    let refreshControl = sut.view.viewWithTag(Person.ViewKind.refreshControl.rawValue) as! UIRefreshControl
+    
+    // When
+    sut.viewDidLoad()
+    
+    // Then
+    XCTAssertNotNil(tableView.delegate)
+    XCTAssertNotNil(tableView.dataSource)
+    XCTAssertNotEqual(tableView.rowHeight, 56)
+    XCTAssertEqual(emptyView.backgroundColor, UIColor.systemBackground)
+    XCTAssertTrue(emptyView.isHidden)
+    XCTAssertEqual(refreshControl.layer.zPosition, -1)
+    
+  }
 }

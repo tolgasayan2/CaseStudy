@@ -22,7 +22,7 @@ class CustomTableViewCell: UITableViewCell {
   private var nameLabel: UILabel = {
     let label = UILabel()
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.textColor = .black
+    label.textColor = .label
     label.contentMode = .right
     label.numberOfLines = 0
     label.font = .systemFont(ofSize: 17, weight: .regular)
@@ -32,7 +32,7 @@ class CustomTableViewCell: UITableViewCell {
   private var idLabel: UILabel = {
     let label = UILabel()
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.textColor = .black
+    label.textColor = .label
     label.contentMode = .left
     label.font = .systemFont(ofSize: 17, weight: .regular)
     return label
@@ -50,6 +50,7 @@ class CustomTableViewCell: UITableViewCell {
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
+    contentView.backgroundColor = .systemBackground
     stackView.addArrangedSubview(nameLabel)
     stackView.addArrangedSubview(idLabel)
     contentView.addSubview(stackView)
@@ -71,5 +72,11 @@ class CustomTableViewCell: UITableViewCell {
   private func initView(viewModel: CustomCellViewModel) {
     self.nameLabel.text = viewModel.name
     self.idLabel.text = String(format: "%(\(viewModel.id))")
+  }
+  
+  func makePagination<T>(indexPath: IndexPath, arrayModel: [T], completion: () -> Void) {
+    if indexPath.row == arrayModel.count - 1 {
+      completion()
+    }
   }
 }

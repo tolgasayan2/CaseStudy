@@ -49,14 +49,14 @@ class PersonViewModel: PersonDisplayLogic {
                                                    id: person.id)
         detailViewModel?.append(person)
       }
-      viewController?.displayTableView(viewModel: detailViewModel ?? [])
+      viewController?.displayTableView(viewModel: detailViewModel?.unique ?? [])
     } else {
       let personArray: [Person.ViewModel] = people.map({ person in
         let person = Person.ViewModel(name: person.fullName,
                                       id: person.id)
         return person
       })
-      viewController?.displayTableView(viewModel: personArray)
+      viewController?.displayTableView(viewModel: personArray.unique)
     }
     if let next = response?.next {
       viewController?.getNext(next: next)
