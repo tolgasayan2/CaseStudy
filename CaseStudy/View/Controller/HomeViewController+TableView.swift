@@ -9,8 +9,7 @@ import Foundation
 import UIKit
 
 extension HomeViewController: UITableViewDelegate,
-                              UITableViewDataSource,
-                              UIScrollViewDelegate {
+                              UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return detailViewModel.count
