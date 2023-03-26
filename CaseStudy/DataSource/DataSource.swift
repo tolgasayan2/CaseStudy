@@ -18,16 +18,22 @@ public class DataSource: DataSourceNetworking {
   private let operationsQueue = OperationQueue()
   
   public func fetch(next: String?, _ completionHandler: @escaping FetchCompletionHandler) {
-    DispatchQueue.global().async {
+    let operation1 = BlockOperation {
       self.initializeDataIfNecessary()
+    }
+    
+    let operation2 = BlockOperation {
       
       let (response, error, waitTime) = self.processRequest(next)
-      self.operationsQueue.waitUntilAllOperationsAreFinished()
-      self.operationsQueue.maxConcurrentOperationCount = 1
+
       DispatchQueue.main.asyncAfter(deadline: .now() + waitTime) {
         completionHandler(response, error)
       }
     }
+    operation2.addDependency(operation1)
+    operationsQueue.addOperations([operation1, operation2], waitUntilFinished: true)
+    operationsQueue.maxConcurrentOperationCount = 1
+    operationsQueue.qualityOfService = .background
   }
   
   private func initializeDataIfNecessary() {
